@@ -22,6 +22,27 @@
           >
         </div>
       </div>
+
+      <!-- 多选题 -->
+      <div class="space-y-2">
+        <div v-for="check in question.checks" :key="check">
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              :id="'check-' + question.id + '-' + check"
+              :value="check"
+              @change="handleInput(check)"
+              class="form-checkbox h-4 w-4 text-blue-600 cursor-pointer"
+            >
+            <label 
+              :for="'check-' + question.id + '-' + check" 
+              class="ml-2 text-gray-700 cursor-pointer hover:text-blue-600"
+            >
+              {{ check }}
+            </label>
+          </div>
+        </div>
+      </div>
       
       <!-- 单选题 -->
       <!-- <div v-if="question.type === 'radio'" class="space-y-2"> -->

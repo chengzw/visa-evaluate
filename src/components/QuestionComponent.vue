@@ -2,29 +2,10 @@
   <div class="question-container" :class="{'py-3 px-4': nestingLevel > 0}">
     <div class="mb-4">
       <p class="text-lg font-medium text-gray-700 mb-2">{{ question.text }}</p>
-      
-      <!-- 单选题 -->
-      <div v-if="question.type === 'radio'" class="space-y-2">
-        <div v-for="option in question.options" :key="option" class="flex items-center">
-          <input
-            type="radio"
-            :id="'option-' + question.id + '-' + option"
-            :value="option"
-            :checked="value?.answer === option"
-            @change="handleInput(option)"
-            class="form-radio h-4 w-4 text-blue-600 cursor-pointer"
-          >
-          <label 
-            :for="'option-' + question.id + '-' + option" 
-            class="ml-2 text-gray-700 cursor-pointer hover:text-blue-600"
-          >
-            {{ option }}
-          </label>
-        </div>
-      </div>
 
       <!-- 输入题 -->
-      <div v-else-if="question.type === 'input'" class="space-y-3">
+      <!-- <div v-else-if="question.type === 'input'" class="space-y-3"> -->
+      <div class="space-y-3 more-space">
         <div v-for="field in question.fields" :key="field" class="flex flex-col">
           <label 
             :for="field + '-' + question.id" 
@@ -41,29 +22,77 @@
           >
         </div>
       </div>
-    </div>
+      
+      <!-- 单选题 -->
+      <!-- <div v-if="question.type === 'radio'" class="space-y-2"> -->
+      <div class="space-y-2">
+        <div v-for="option in question.options" :key="option">
+          <div class="flex items-center">
+            <input
+              type="radio"
+              :id="'option-' + question.id + '-' + option"
+              :value="option"
+              :checked="value?.answer === option"
+              @change="handleInput(option)"
+              class="form-radio h-4 w-4 text-blue-600 cursor-pointer"
+            >
+            <label 
+              :for="'option-' + question.id + '-' + option" 
+              class="ml-2 text-gray-700 cursor-pointer hover:text-blue-600"
+            >
+              {{ option }}
+            </label>
+          </div>
 
-    <!-- 嵌套的子问题 -->
-    <transition name="fade">
-      <div 
-        v-if="showSubQuestions" 
-        class="ml-6 mt-4 border-l-2 border-blue-200 pl-4 rounded-r"
-        :class="{
-          'bg-blue-50': nestingLevel === 1,
-          'bg-blue-100': nestingLevel === 2,
-          'bg-blue-200': nestingLevel >= 3
-        }"
-      >
-        <question-component
-          v-for="subQuestion in subQuestions"
-          :key="subQuestion.id"
-          :question="subQuestion"
-          :value="getSubQuestionValue(subQuestion.id)"
-          :nesting-level="nestingLevel + 1"
-          @input="handleSubQuestionInput(subQuestion.id, $event)"
-        />
+          <div id="sub" v-if="subQuestions && subQuestions.length > 0 && value?.answer === option">
+            <!-- 嵌套的子问题 -->
+            <transition name="fade">
+              <div 
+                v-if="showSubQuestions"
+                class="ml-6 mt-4 border-l-2 border-blue-200 pl-4 rounded-r"
+                :class="{
+                  'bg-blue-50': nestingLevel === 1,
+                  'bg-blue-100': nestingLevel === 2,
+                  'bg-blue-200': nestingLevel >= 3
+                }"
+              >
+                <question-component
+                  v-for="subQuestion in subQuestions"
+                  :key="subQuestion.id"
+                  :question="subQuestion"
+                  :value="getSubQuestionValue(subQuestion.id)"
+                  :nesting-level="nestingLevel + 1"
+                  @input="handleSubQuestionInput(subQuestion.id, $event)"
+                />
+              </div>
+            </transition>
+          </div>
+        </div>
       </div>
-    </transition>
+
+            <!-- 嵌套的子问题 -->
+            <!-- <transition name="fade">
+              <div 
+                v-if="showSubQuestions" dat="{option}"
+                class="ml-6 mt-4 border-l-2 border-blue-200 pl-4 rounded-r"
+                :class="{
+                  'bg-blue-50': nestingLevel === 1,
+                  'bg-blue-100': nestingLevel === 2,
+                  'bg-blue-200': nestingLevel >= 3
+                }"
+              >
+                <question-component
+                  v-for="subQuestion in subQuestions"
+                  :key="subQuestion.id"
+                  :question="subQuestion"
+                  :value="getSubQuestionValue(subQuestion.id)"
+                  :nesting-level="nestingLevel + 1"
+                  @input="handleSubQuestionInput(subQuestion.id, $event)"
+                />
+              </div>
+            </transition> -->
+
+    </div>
   </div>
 </template>
 
@@ -157,5 +186,9 @@ input[type="radio"] {
 input[type="text"]:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.more-space {
+  margin-bottom: 16px !important;
 }
 </style>

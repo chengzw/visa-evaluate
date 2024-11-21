@@ -85,7 +85,9 @@ export default {
     ...mapState(['categories', 'questions', 'answers']),
     currentCategory() {
       // console.log('finding category for current: ', parseInt(this.id))
-      return this.categories.find(c => c.id === parseInt(this.id))
+      let category = this.categories.find(c => c.id === parseInt(this.id))
+      console.log("current category: ", category)
+      return category
     },
     currentCategoryIndex() {
       return this.categories.findIndex(c => c.id === parseInt(this.id))

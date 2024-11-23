@@ -70,7 +70,7 @@
             <transition name="fade">
               <div 
                 v-if="showSubQuestions"
-                class="ml-1 mt-4 border-l-2 border-blue-200 pl-2 rounded-r"
+                class="ml-1 mt-4 border-l-2 border-blue-200 pl-1 rounded-r"
                 :class="{
                   'bg-blue-50': nestingLevel === 1,
                   'bg-blue-100': nestingLevel === 2,

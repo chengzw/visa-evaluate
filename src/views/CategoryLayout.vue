@@ -18,7 +18,7 @@
       <!-- Category header -->
       <div class="bg-blue-50 p-6 rounded-t-lg border-b border-blue-100">
         <h1 class="text-2xl font-bold text-blue-600">{{ currentCategory.name }}</h1>
-        <p class="text-gray-600 mt-2">请认真填写以下问题，带 * 的为必填项</p>
+        <p class="text-gray-600 mt-2">请认真填写以下问题，带 <span class="star">*</span> 的为必填项</p>
       </div>
       
       <!-- Questions -->
@@ -45,14 +45,15 @@
           <button
             v-if="currentCategoryIndex < categories.length - 1"
             @click="navigateToCategory(currentCategoryIndex + 1)"
-            class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 ml-auto"
+            :disabled="notFillAll"
+            class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 ml-auto disabled:opacity-25 disabled:cursor-not-allowed"
           >
             下一步
           </button>
           <button
             v-else
             @click="submitSurvey"
-            class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-200 ml-auto"
+            class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-200 ml-auto disabled:opacity-25 disabled:cursor-not-allowed"
           >
             提交问卷
           </button>
@@ -86,7 +87,6 @@ export default {
     currentCategory() {
       // console.log('finding category for current: ', parseInt(this.id))
       let category = this.categories.find(c => c.id === parseInt(this.id))
-      console.log("current category: ", category)
       return category
     },
     currentCategoryIndex() {
@@ -94,6 +94,9 @@ export default {
     },
     categoryQuestions() {
       return this.questions[this.id] || []
+    },
+    notFillAll() {
+      return true;
     }
   },
   methods: {
@@ -101,6 +104,7 @@ export default {
       return this.answers[this.id]?.[questionId]
     },
     handleAnswer(questionId, answer) {
+      console.log('handleAnswer', questionId, answer)
       this.$store.commit('setAnswer', {
         categoryId: parseInt(this.id),
         questionId,
@@ -141,5 +145,11 @@ export default {
 .fade-enter, .fade-leave-to {
   opacity: 0;
   transform: translateY(10px);
+}
+</style>
+<style>
+.star {
+  color: red;
+  padding-top: 5px;
 }
 </style>

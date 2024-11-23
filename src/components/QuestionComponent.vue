@@ -1,7 +1,8 @@
 <template>
   <div class="question-container" :class="{'py-3 px-4': nestingLevel > 0}">
     <div class="mb-4">
-      <p class="text-lg font-medium text-gray-700 mb-2">{{ question.text }}</p>
+      <p class="text-lg font-medium text-gray-700 mb-2"><span v-if="question.must && question.type !== 'input' && question.text !== ''" class="star">*</span>{{ question.text }} [{{ valid }}]</p>
+      <p><span v-if="subQuestionValid">valid</span><span v-else>invalid</span> {{ value }}</p>
 
       <!-- 输入题 -->
       <!-- <div v-else-if="question.type === 'input'" class="space-y-3"> -->
@@ -11,7 +12,7 @@
             :for="field + '-' + question.id" 
             class="text-sm text-gray-600 mb-1"
           >
-            {{ field }}
+            <span v-if="question.must" class="star">*</span>{{ field }}
           </label>
           <input
             type="text"
@@ -38,7 +39,7 @@
               :for="'check-' + question.id + '-' + check" 
               class="ml-2 text-gray-700 cursor-pointer hover:text-blue-600"
             >
-              {{ check }}
+            {{ check }}
             </label>
           </div>
         </div>
@@ -140,8 +141,31 @@ export default {
              this.question.subQuestions[this.value?.answer] &&
              this.question.type === 'radio'
     },
+    subQuestionValid() {
+      if (!this.question.must) return true
+      if (this.question.type === 'input') {
+        return Object.values(this.value?.fields || {}).some(field => field.trim()!== '')
+      } else if (this.question.type === 'checkbox') {
+        return this.value?.answer && this.value?.answer.length > 0
+      }
+      else if (this.question.type === 'radio') {
+        return this.question.type === 'radio' && this.value?.answer && this.value?.answer.length > 0
+      }
+      return true;
+    },
     subQuestions() {
       return this.question.subQuestions?.[this.value?.answer] || []
+    },
+    valid() {
+      if (this.question.must && this.question.type === 'radio') {
+        return this.value?.answer && this.value?.answer.length > 0
+      } else if (this.question.must && this.question.type === 'input') {
+        return Object.values(this.value?.fields || {}).some(field => field.trim()!== '')
+      } else if (this.question.must && this.question.type === 'checkbox') {
+        return this.value?.answer && this.value?.answer.length > 0
+      } else {
+        return true
+      }
     }
   },
   methods: {

@@ -8,119 +8,6 @@ export default new Vuex.Store({
   state: {
     categories: [],
     questions: [],
-    // questions: {
-    //   1: [
-    //     {
-    //       id: 1,
-    //       type: 'radio',
-    //       text: '曾改过姓？',
-    //       options: ['是', '否'],
-    //       subQuestions: {
-    //         '是': [
-    //           {
-    //             id: 2,
-    //             type: 'input',
-    //             text: '请详细说明原因：',
-    //             fields: ['原因']
-    //           }
-    //         ]
-    //       }
-    //     },
-    //     {
-    //       id: 2,
-    //       type: 'radio',
-    //       text: '曾改过名？',
-    //       options: ['是', '否'],
-    //       subQuestions: {
-    //         '是': [
-    //           {
-    //             id: 2,
-    //             type: 'input',
-    //             text: '请详细说明原因：',
-    //             fields: ['原因']
-    //           }
-    //         ]
-    //       }
-    //     },
-    //     {
-    //       id: 3,
-    //       type: 'radio',
-    //       text: '婚姻状况',
-    //       options: ['已婚', '事实婚姻', '未婚', '离婚', '丧偶'],
-    //       subQuestions: {
-    //         '是': [
-    //           {
-    //             id: 2,
-    //             type: 'input',
-    //             text: '请详细说明原因：',
-    //             fields: ['原因']
-    //           }
-    //         ]
-    //       }
-    //     },
-    //     {
-    //       id: 4,
-    //       type: 'input',
-    //       text: '年龄和出生地点',
-    //       fields: ['年龄', '地点'],
-    //       subQuestions: {
-    //         '是': [
-    //           {
-    //             id: 2,
-    //             type: 'input',
-    //             text: '请详细说明原因：',
-    //             fields: ['原因']
-    //           }
-    //         ]
-    //       }
-    //     },
-    //     {
-    //       id: 5,
-    //       type: 'radio',
-    //       text: '其他国家(地区)居留权',
-    //       options: ['有', '无'],
-    //       subQuestions: {
-    //         '有': [
-    //           {
-    //             id: 2,
-    //             type: 'input',
-    //             text: '输入居留权国家(地区)',
-    //             fields: ['']
-    //           }
-    //         ]
-    //       }
-    //     }
-    //   ],
-    //   2: [
-    //     {
-    //       id: 1,
-    //       type: 'radio',
-    //       text: '赴美旅行的目的',
-    //       options: ['B1 商务考察', 'B2 短期旅游', 'B1/B2 商务考察/短期旅游'],
-    //       subQuestions: {
-    //         'B1 商务考察': [
-    //           {
-    //             id: 2,
-    //             type: 'radio',
-    //             text: '',
-    //             options: ['有邀请函', '无邀请函'],
-    //             subQuestions: {
-    //               '有邀请函': [
-    //                 {
-    //                   id: 3,
-    //                   type: 'radio',
-    //                   text: '',
-    //                   options: ['观展', '参展', '商业合作/研讨会']
-    //                 }
-    //               ]
-    //             }
-    //           }
-    //         ]
-    //       }
-    //     }
-    //   ],
-    //   3: []
-    // },
     answers: {},
     notification: {
       show: false,
@@ -131,8 +18,6 @@ export default new Vuex.Store({
   mutations: {
     setCategories(state, payload) {
       state.categories = payload;
-      console.log(state.categories)
-      console.log(payload)
     },
     setQuestions(state, payload) {
       state.questions = payload;

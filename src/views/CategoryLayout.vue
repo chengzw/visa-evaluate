@@ -17,7 +17,7 @@
     <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg">
       <!-- Category header -->
       <div class="bg-blue-50 p-6 rounded-t-lg border-b border-blue-100">
-        <h1 class="text-2xl font-bold text-blue-600">{{ currentCategory.name }}</h1>
+        <h1 v-if="currentCategory" class="text-2xl font-bold text-blue-600">{{ currentCategory.name }}</h1>
         <p class="text-gray-600 mt-2">请认真填写以下问题，带 <span class="star">*</span> 的为必填项</p>
       </div>
       
@@ -90,13 +90,14 @@ export default {
       return category
     },
     currentCategoryIndex() {
+      // console.log("this.id: ", this.id, 'categories: ', this.categories)
       return this.categories.findIndex(c => c.id === parseInt(this.id))
     },
     categoryQuestions() {
       return this.questions[this.id] || []
     },
     notFillAll() {
-      return true;
+      return !this.allQuestionValid()
     }
   },
   methods: {
@@ -110,6 +111,110 @@ export default {
         questionId,
         answer
       })
+      console.log('handleAnswer call allQuestionValid: ', this.allQuestionValid())
+    },
+    allQuestionValid() {
+      // 使用every方法遍历数组，确保所有问题都有效
+      return this.categoryQuestions.every(question => {
+        // 直接返回问题的有效性
+        const answer = this.getAnswer(question.id)
+        const valid = this.checkQuestionValid(question, answer);
+        console.log('allQuestionValid. question: ', question, answer, "valid: ", valid)
+        return valid
+      });
+    },
+    getSubQuestionFromValue(question, value) {
+      // 目前只有options类型的子问题
+      if (!question.subQuestions)  {
+        return null;
+      }
+      // 本问题有subQuestions
+      const subQuestion = Object.keys(question.subQuestions).includes(value.answer) ? question.subQuestions[value.answer] : null;
+      if (subQuestion && subQuestion.length > 0) {
+        return subQuestion[0]
+      }
+      return subQuestion
+    },
+    getSubValueFromValue(subQuestion, value) {
+      // console.log("get subValue from value: ", subQuestion, value, "keys: ", Object.keys(value.subAnswers), "subQuestion.id: ", subQuestion.id)
+      if (!value.subAnswers) {
+        return null
+      }
+      const subValue = Object.keys(value.subAnswers).includes(subQuestion.id.toString()) ? value.subAnswers[subQuestion.id] : null;
+      // console.log("getSubValueFromValue got subValue:", subValue)
+      return subValue
+    },
+    checkQuestionValid(question, value) {
+      const debugId = 0
+      if (question.id == debugId) {
+        console.log("checkQuestionValid for ", question, value)
+      }
+      if (!question.must) {
+        console.log("checkQuestionValid: ", question.text, " is not must: true")
+        question.valid = true
+        return true
+      }
+      if (!value) {
+        console.log("checkQuestionValid: ", question.text, " has no value: false")
+        question.valid = false
+        return false
+      }
+      // 先检查当前问题是否已经正确回答
+      if (question.options) {
+        // 有options需要选择，value里必须有answer
+        if (!value.answer || value.answer.length == 0 || question.options.indexOf(value.answer) === -1) {
+          // console.log("checkQuestionValid: ", question.text, " has no valid answer: false")
+          question.valid = false
+          return false
+        }
+        if (question.id == debugId) {
+          console.log("start get subquestion and subvalue")
+        }
+        const subQuestion = this.getSubQuestionFromValue(question, value)
+        if (!subQuestion) {
+          // console.log("checkQuestionValid: ", question.text, " has no subQuestion for ", value.answer, ": true")
+          question.valid = true
+          return true
+        }
+        const subValue = this.getSubValueFromValue(subQuestion, value)
+        if (question.id == debugId) {
+          console.log("start check subquestion: ", subQuestion, subValue)
+        }
+        const subQuestionValid = this.checkQuestionValid(subQuestion, subValue)
+        if (question.id == debugId) {
+          console.log("checkQuestionValid for subquestion: ", question.text, ", subQuestion: ", subQuestion, ", subValue: ", subValue, " is valid: ", subQuestionValid)
+        }
+        question.valid = subQuestionValid
+        return subQuestionValid
+      }
+      else if (question.fields) {
+        // 使用some方法遍历数组
+        // console.log("checkdQuestionValid: question " + question.id + " has fields: ", question)
+        const foundInvalid = question.fields.some(field => {
+          const must = Object.keys(question.fields_must).includes(field) ? question.fields_must[field] : false;
+          if (!must) {
+            console.log(field, ": must is false: valid")
+            return false
+          }
+          // 调用自定义函数判断元素
+          const result = (value?.fields?.[field] || '').trim()
+          // 如果函数返回空字符串，则结束遍历
+          // console.log(field, " result: ", result)
+          return result === '';
+        });
+        // console.log("checkQuestionValid: ", question.text, ", is valid: ", !foundInvalid)
+        question.valid = !foundInvalid
+        return !foundInvalid;
+      }
+      else if (question.checks) {
+        const answers = value?.answers || []
+        const valid = answers.length > 0
+        // console.log("checkQuestionValid: ", question.text, ", checkbox answers: ", value.answers, ", is valid: ", valid)
+        question.valid = valid
+        return valid
+      }
+      question.valid = true
+      return true
     },
     navigateToCategory(index) {
       const nextCategory = this.categories[index]
